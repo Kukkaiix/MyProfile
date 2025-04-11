@@ -1,71 +1,107 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+
+// Animated Hamburger Icon
+const HamburgerIcon = ({ open }) => {
+  return (
+    <div className="w-6 h-5 relative flex flex-col justify-between items-center cursor-pointer">
+      <span
+        className={`block h-0.5 w-full bg-[#1A1A7A] transform transition duration-300 ease-in-out ${
+          open ? "rotate-45 translate-y-2" : ""
+        }`}
+      />
+      <span
+        className={`block h-0.5 w-full bg-[#1A1A7A] transition-all duration-300 ease-in-out ${
+          open ? "opacity-0" : ""
+        }`}
+      />
+      <span
+        className={`block h-0.5 w-full bg-[#1A1A7A] transform transition duration-300 ease-in-out ${
+          open ? "-rotate-45 -translate-y-2" : ""
+        }`}
+      />
+    </div>
+  );
+};
 
 const navItems = [
-  { name: "ABOUT ME", path: "/about" },
-  { name: "RESUME", path: "#" },
-  { name: "PROJECTS", path: "#" },
-  { name: "CONTACT", path: "#" },
+  { name: "About", path: "/about" },
+  { name: "Resume", path: "#" },
+  { name: "Projects", path: "#" },
+  { name: "Contact", path: "#" },
 ];
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-md px-6 md:px-10 py-5 text-sm font-medium border-b border-[#D3CBEA] z-50 relative">
+    <header className="bg-white shadow-md px-6 md:px-10 py-4 border-b border-[#D3CBEA] z-50 relative">
       <div className="flex justify-between items-center">
-        {/* BRAND */}
-        <Link to="/" className="text-base font-bold text-[#1A1A7A] tracking-wide">
+        {/* Brand */}
+        <Link to="/" className="text-lg font-bold text-[#1A1A7A]">
           JHANTHARAS <span className="text-[#4B4BE1] font-semibold">/ ENGINEERING STUDENT</span>
         </Link>
 
-        {/* DESKTOP NAV */}
-        <nav className="hidden md:flex gap-6 text-[#1A1A7A]">
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex gap-6 text-[#1A1A7A] font-medium">
           {navItems.map(({ name, path }) => (
             <Link
               key={name}
               to={path}
-              className="hover:text-[#4B4BE1] hover:underline underline-offset-4 transition"
+              className="hover:text-[#4B4BE1] transition-colors duration-200"
             >
               {name}
             </Link>
           ))}
         </nav>
 
-        {/* HAMBURGER (MOBILE) */}
+        {/* Mobile Hamburger */}
         <button
-          className="md:hidden text-2xl text-[#1A1A7A]"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open Menu"
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden"
+          aria-label="Toggle menu"
         >
-          <HiOutlineMenu />
+          <HamburgerIcon open={menuOpen} />
         </button>
       </div>
 
-      {/* FULLSCREEN MENU MOBILE */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 bg-white text-[#1A1A7A] flex flex-col items-center justify-center gap-8 px-6 text-lg font-semibold transition-all duration-300 ease-in-out">
-          <button
-            className="absolute top-6 right-6 text-3xl text-[#1A1A7A]"
-            onClick={() => setIsOpen(false)}
-            aria-label="Close Menu"
-          >
-            <HiOutlineX />
-          </button>
+      {/* Overlay */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+          onClick={() => setMenuOpen(false)}
+        ></div>
+      )}
 
+      {/* Slide-in Panel */}
+      <div
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center px-4 py-5 border-b border-gray-200">
+          <span className="text-base font-bold text-[#1A1A7A]">MENU</span>
+          <button
+            onClick={() => setMenuOpen(false)}
+            className="text-xl text-[#1A1A7A]"
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="flex flex-col gap-4 p-6">
           {navItems.map(({ name, path }) => (
             <Link
               key={name}
               to={path}
-              onClick={() => setIsOpen(false)}
-              className="hover:text-[#4B4BE1] transition duration-200"
+              onClick={() => setMenuOpen(false)}
+              className="text-[#1A1A7A] hover:text-[#4B4BE1] transition text-sm font-medium"
             >
               {name}
             </Link>
           ))}
         </div>
-      )}
+      </div>
     </header>
   );
 };
