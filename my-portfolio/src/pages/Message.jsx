@@ -1,55 +1,54 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Home/Header';
 import Footer from '../components/Home/Footer';
-import { HiVolumeUp, HiVolumeOff } from 'react-icons/hi';
-
-const clickMessages = [
-  "Click to send?!",
-  "One more time...",
-  "Sorry, last time!",
-  "Okay okay, sending 💌"
-];
-
-const buttonTranslate = [
-  "-translate-x-1/2",          // Center
-  "-translate-x-[10rem]",      // Left
-  "translate-x-[10rem]",       // Right
-  "-translate-x-1/2"           // Back to center
-];
+import MessageForm from '../components/Message/MessageForm';
+import MusicToggle from '../components/Message/MusicToggle';
+import SuccessMessage from '../components/Message/SuccessMessage';
 
 const Message = () => {
   const [sent, setSent] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [muted, setMuted] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const audioRef = useRef(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSent(true);
-  };
+  const navigate = useNavigate();
 
   const handleMoveButton = () => {
-    if (clickCount < clickMessages.length - 1) {
+    if (clickCount < 3) {
       setClickCount(prev => prev + 1);
     } else {
       setSent(true);
     }
   };
 
+  // 🎵 Try autoplay
   useEffect(() => {
-    const playAudio = () => {
-      if (audioRef.current && !muted) {
-        audioRef.current.volume = 0.3;
-        audioRef.current.play().catch(err => {
-          console.warn("Autoplay may be blocked by browser settings:", err);
+    const tryPlay = () => {
+      if (!audioRef.current || muted) return;
+
+      audioRef.current.volume = 0.3;
+      const playPromise = audioRef.current.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          const context = new AudioContext();
+          context.resume().then(() => {
+            audioRef.current?.play().catch((err2) => {
+              console.warn("Still blocked:", err2);
+            });
+          });
         });
       }
     };
-    // 👇 เปิดเสียงทันทีตอนเข้าเพจ (หลัง user interaction ครั้งแรก)
-    window.addEventListener('click', playAudio, { once: true });
-    return () => window.removeEventListener('click', playAudio);
+
+    tryPlay();
+    window.addEventListener('click', tryPlay, { once: true });
+    return () => window.removeEventListener('click', tryPlay);
   }, [muted]);
 
+  // 🔄 Mute toggle
   const toggleMute = () => {
     if (audioRef.current) {
       audioRef.current.muted = !muted;
@@ -58,26 +57,29 @@ const Message = () => {
     setMuted(!muted);
   };
 
+  // ⏳ Redirect after send
+  useEffect(() => {
+    if (sent) {
+      setRedirecting(true);
+      const timer = setTimeout(() => {
+        navigate('/');
+      }, 3000); // 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [sent, navigate]);
+
   return (
     <div className="flex flex-col min-h-screen font-sans bg-[#F6F4FD] text-[#1A1A7A] relative">
-      {/* 🎵 Music */}
       <audio
         ref={audioRef}
-        src="/audio/coffee.mp3" // ✅ วางไฟล์ไว้ใน /public/audio/
+        src="/audio/coffee.mp3"
         loop
         preload="auto"
         autoPlay
       />
 
-      {/* 🔊 Volume Toggle */}
-      <button
-        onClick={toggleMute}
-        className="fixed bottom-6 right-6 z-50 bg-white shadow-lg rounded-full p-3 text-[#4B4BE1] hover:bg-[#eae6ff] transition-all"
-        aria-label="Toggle music"
-      >
-        {muted ? <HiVolumeOff size={22} /> : <HiVolumeUp size={22} />}
-      </button>
-
+      <MusicToggle muted={muted} toggleMute={toggleMute} />
       <Header />
 
       <main className="flex-1 flex items-center justify-center px-4 py-16">
@@ -87,46 +89,15 @@ const Message = () => {
           </h1>
 
           {!sent ? (
-            <>
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-5 text-sm text-[#1A1A7A]">
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  required
-                  className="w-full px-5 py-3 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
-                />
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  required
-                  className="w-full px-5 py-3 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
-                />
-                <textarea
-                  placeholder="Your Message"
-                  rows="4"
-                  required
-                  className="w-full px-5 py-3 rounded-2xl shadow resize-none focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
-                />
-              </form>
+  <MessageForm
+    clickCount={clickCount}
+    onMoveButton={handleMoveButton}
+    onSent={() => setSent(true)}
+  />
+) : redirecting ? (
+  <SuccessMessage />
+) : null}
 
-              {/* 💃 Dancing Button */}
-              <div className="relative mt-10 h-12 overflow-hidden">
-                <button
-                  onClick={handleMoveButton}
-                  className={`absolute left-1/2 ${buttonTranslate[clickCount % 4]} 
-                    transition-transform duration-500 ease-in-out
-                    bg-white px-6 py-3 rounded-full shadow font-semibold text-[#1A1A7A] hover:scale-105`}
-                >
-                  {clickMessages[clickCount]}
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="text-center text-[#1A1A7A] mt-6">
-              <h2 className="text-xl font-bold mb-2">Thank you! 💌</h2>
-              <p className="text-sm">Your message has been sent successfully.</p>
-            </div>
-          )}
         </div>
       </main>
 
