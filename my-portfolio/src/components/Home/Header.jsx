@@ -26,7 +26,7 @@ const HamburgerIcon = ({ open }) => {
 
 const navItems = [
   { name: "About", path: "/about" },
-  { name: "Resume", path: "#" },
+  { name: "Talk", path: "/message" },
   { name: "Projects", path: "#" },
   { name: "Contact", path: "#" },
 ];

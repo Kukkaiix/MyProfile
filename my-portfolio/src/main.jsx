@@ -7,6 +7,7 @@ import AOS from 'aos';
 
 import Home from './pages/Home';
 import About from './pages/About';
+import Message from './pages/Message';
 
 AOS.init();
 
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/message" element={<Message />} />
       </Routes>
     </Router>
   </React.StrictMode>
