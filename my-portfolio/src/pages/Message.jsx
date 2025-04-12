@@ -1,64 +1,133 @@
+import { useState, useRef, useEffect } from 'react';
 import Header from '../components/Home/Header';
 import Footer from '../components/Home/Footer';
-import { useState } from 'react';
+import { HiVolumeUp, HiVolumeOff } from 'react-icons/hi';
+
+const clickMessages = [
+  "Click to send?!",
+  "One more time...",
+  "Sorry, last time!",
+  "Okay okay, sending 💌"
+];
+
+const buttonTranslate = [
+  "-translate-x-1/2",          // Center
+  "-translate-x-[10rem]",      // Left
+  "translate-x-[10rem]",       // Right
+  "-translate-x-1/2"           // Back to center
+];
 
 const Message = () => {
-  const [submitted, setSubmitted] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const audioRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 🚀 Here you can connect to EmailJS, Formspree, Firebase etc.
-    setSubmitted(true);
+    setSent(true);
+  };
+
+  const handleMoveButton = () => {
+    if (clickCount < clickMessages.length - 1) {
+      setClickCount(prev => prev + 1);
+    } else {
+      setSent(true);
+    }
+  };
+
+  useEffect(() => {
+    const playAudio = () => {
+      if (audioRef.current && !muted) {
+        audioRef.current.volume = 0.3;
+        audioRef.current.play().catch(err => {
+          console.warn("Autoplay may be blocked by browser settings:", err);
+        });
+      }
+    };
+    // 👇 เปิดเสียงทันทีตอนเข้าเพจ (หลัง user interaction ครั้งแรก)
+    window.addEventListener('click', playAudio, { once: true });
+    return () => window.removeEventListener('click', playAudio);
+  }, [muted]);
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !muted;
+      if (!muted) audioRef.current.play();
+    }
+    setMuted(!muted);
   };
 
   return (
-    <div className="flex flex-col min-h-screen font-sans bg-[#F6F4FD] text-[#1A1A7A]">
+    <div className="flex flex-col min-h-screen font-sans bg-[#F6F4FD] text-[#1A1A7A] relative">
+      {/* 🎵 Music */}
+      <audio
+        ref={audioRef}
+        src="/audio/coffee.mp3" // ✅ วางไฟล์ไว้ใน /public/audio/
+        loop
+        preload="auto"
+        autoPlay
+      />
+
+      {/* 🔊 Volume Toggle */}
+      <button
+        onClick={toggleMute}
+        className="fixed bottom-6 right-6 z-50 bg-white shadow-lg rounded-full p-3 text-[#4B4BE1] hover:bg-[#eae6ff] transition-all"
+        aria-label="Toggle music"
+      >
+        {muted ? <HiVolumeOff size={22} /> : <HiVolumeUp size={22} />}
+      </button>
+
       <Header />
 
-      <main className="flex-1 px-6 md:px-10 lg:px-28 py-20 max-w-3xl mx-auto">
-        <section
-          className="bg-gradient-to-r from-[#D8D4F3] to-[#F6F4FD] p-10 rounded-3xl shadow-xl text-center"
-          data-aos="fade-up"
-        >
-          <h1 className="text-4xl font-bold mb-3">Leave a Message 💬</h1>
-          <p className="text-sm text-gray-700 mb-8">
-            Got something on your mind? I'd love to hear from you!
-          </p>
+      <main className="flex-1 flex items-center justify-center px-4 py-16">
+        <div className="bg-[#CFC3F3] max-w-xl w-full rounded-[30px] p-8 shadow-xl relative" data-aos="fade-up">
+          <h1 className="text-center text-2xl font-extrabold text-[#1A1A7A] mb-6">
+            Leave a Message 💬
+          </h1>
 
-          {!submitted ? (
-            <form onSubmit={handleSubmit} className="space-y-5 text-left">
-              <input
-                required
-                type="text"
-                placeholder="Your Name"
-                className="w-full px-4 py-3 rounded-xl shadow border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
-              />
-              <input
-                required
-                type="email"
-                placeholder="Your Email"
-                className="w-full px-4 py-3 rounded-xl shadow border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
-              />
-              <textarea
-                required
-                placeholder="Your Message"
-                rows="5"
-                className="w-full px-4 py-3 rounded-xl shadow border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
-              />
-              <button
-                type="submit"
-                className="bg-[#1A1A7A] hover:bg-[#15156a] text-white font-semibold px-6 py-3 rounded-full transition shadow"
-              >
-                Send Message
-              </button>
-            </form>
+          {!sent ? (
+            <>
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-5 text-sm text-[#1A1A7A]">
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  required
+                  className="w-full px-5 py-3 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
+                />
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  required
+                  className="w-full px-5 py-3 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
+                />
+                <textarea
+                  placeholder="Your Message"
+                  rows="4"
+                  required
+                  className="w-full px-5 py-3 rounded-2xl shadow resize-none focus:outline-none focus:ring-2 focus:ring-[#4B4BE1]"
+                />
+              </form>
+
+              {/* 💃 Dancing Button */}
+              <div className="relative mt-10 h-12 overflow-hidden">
+                <button
+                  onClick={handleMoveButton}
+                  className={`absolute left-1/2 ${buttonTranslate[clickCount % 4]} 
+                    transition-transform duration-500 ease-in-out
+                    bg-white px-6 py-3 rounded-full shadow font-semibold text-[#1A1A7A] hover:scale-105`}
+                >
+                  {clickMessages[clickCount]}
+                </button>
+              </div>
+            </>
           ) : (
-            <div className="text-center text-[#1A1A7A]">
+            <div className="text-center text-[#1A1A7A] mt-6">
               <h2 className="text-xl font-bold mb-2">Thank you! 💌</h2>
-              <p className="text-sm text-gray-700">I'll get back to you as soon as I can.</p>
+              <p className="text-sm">Your message has been sent successfully.</p>
             </div>
           )}
-        </section>
+        </div>
       </main>
 
       <Footer />
