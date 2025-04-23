@@ -13,7 +13,7 @@ const ProfileCard = () => {
   useEffect(() => {
     skills.forEach((skill, i) => {
       let current = 0;
-      const step = Math.ceil(skill.level / 30); // ปรับความเร็ว
+      const step = Math.ceil(skill.level / 30);
       const interval = setInterval(() => {
         current += step;
         if (current >= skill.level) {
@@ -30,39 +30,39 @@ const ProfileCard = () => {
   }, []);
 
   return (
-    <div className="bg-[#CFC3F3] rounded-[30px] p-6 w-full h-full flex flex-col justify-between text-center shadow-xl">
+    <div className="bg-[#1e1e1e] border border-[#3c3c3c] rounded-xl p-6 w-full h-full flex flex-col justify-between text-center shadow-lg font-mono">
       <div>
         {/* Avatar */}
-        <div className="rounded-full border-4 border-[#7E71B7] w-32 h-32 mx-auto overflow-hidden">
-          <img src="/vite.svg" alt="avatar" className="w-full h-full object-cover" />
+        <div className="rounded-full border-4 border-[#4FC1FF] w-32 h-32 mx-auto overflow-hidden shadow-lg">
+          <img src="/vite.svg" alt="avatar" className="object-cover w-full h-full" />
         </div>
-        <h2 className="mt-4 text-base font-semibold text-black">Jhantharas</h2>
-        <hr className="my-2 border-gray-400 w-1/2 mx-auto" />
-        <p className="text-[#1A1A7A] font-bold">ENGINEERING STUDENT</p>
+        <h2 className="mt-4 text-base font-bold text-[#9cdcfe]">Jhantharas</h2>
+        <hr className="my-2 border-[#3c3c3c] w-1/2 mx-auto" />
+        <p className="text-[#4FC1FF] text-sm">ENGINEERING STUDENT</p>
 
         {/* Tags */}
-        <div className="mt-6 flex flex-wrap justify-center gap-2 px-2">
+        <div className="flex flex-wrap justify-center gap-2 px-2 mt-6">
           {["HTML", "CSS", "JavaScript", "React"].map((skill, i) => (
             <span
               key={i}
-              className="bg-white text-[#1A1A7A] px-3 py-1 rounded-full text-xs font-semibold shadow"
+              className="bg-[#2d2d2d] border border-[#3c3c3c] text-[#d4d4d4] px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
             >
               {skill}
             </span>
           ))}
         </div>
 
-        {/* Progress Bars with sync number + animated bar */}
-        <div className="mt-8 px-4 space-y-6 text-left">
+        {/* Progress Bars */}
+        <div className="px-4 mt-8 space-y-6 text-left">
           {skills.map((skill, index) => (
             <div key={index}>
               <div className="flex justify-between mb-1">
-                <span className="text-sm font-semibold text-[#1A1A7A]">{skill.name}</span>
-                <span className="text-sm text-gray-600">{counts[index]}%</span>
+                <span className="text-sm text-[#d4d4d4]">{skill.name}</span>
+                <span className="text-sm text-[#858585]">{counts[index]}%</span>
               </div>
-              <div className="w-full bg-white rounded-full h-3 shadow-inner relative overflow-hidden">
+              <div className="w-full bg-[#2d2d2d] rounded-full h-3 shadow-inner overflow-hidden border border-[#3c3c3c]">
                 <div
-                  className="bg-gradient-to-r from-[#1A1A7A] to-[#4B4BE1] h-full rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-[#4FC1FF] to-[#007acc] h-full rounded-full transition-all duration-500"
                   style={{ width: `${counts[index]}%` }}
                 />
               </div>
@@ -71,14 +71,14 @@ const ProfileCard = () => {
         </div>
       </div>
 
-      {/* Social */}
-      <div className="mt-6 bg-white py-3 px-4 rounded-b-2xl flex justify-center gap-6 shadow items-center">
-        <span className="text-sm font-semibold text-black">Follow On</span>
+      {/* Social Links */}
+      <div className="mt-6 bg-[#252526] py-3 px-4 rounded-b-xl flex justify-center gap-6 items-center border-t border-[#3c3c3c]">
+        <span className="text-sm font-semibold text-[#d4d4d4]">Follow On</span>
         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-          <FaInstagram className="text-xl text-black hover:text-pink-500 transition duration-200" />
+          <FaInstagram className="text-xl text-[#d4d4d4] hover:text-pink-500 transition duration-200" />
         </a>
         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-          <FaFacebookF className="text-xl text-black hover:text-blue-600 transition duration-200" />
+          <FaFacebookF className="text-xl text-[#d4d4d4] hover:text-blue-400 transition duration-200" />
         </a>
       </div>
     </div>
