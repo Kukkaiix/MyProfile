@@ -3,10 +3,10 @@ import { FaFolder, FaFileCode, FaChevronDown } from 'react-icons/fa';
 
 const Sidebar = ({ files, onFileSelect, selectedFile }) => {
   return (
-    <aside className="w-64 bg-[#252526] border-r border-[#3c3c3c]">
+    <aside className="fixed top-16 left-0 h-[calc(100vh-3rem)] w-64 bg-[#252526] border-r border-[#3c3c3c] overflow-y-auto z-40">
       <div className="flex items-center px-4 py-2 border-b border-[#3c3c3c]">
         <FaFolder className="text-[#d4d4d4] mr-2" />
-        <span className="text-sm">EXPLORER</span>
+        <span className="text-sm font-semibold">EXPLORER</span>
       </div>
       <div className="px-4 py-2">
         <div className="flex items-center cursor-pointer">

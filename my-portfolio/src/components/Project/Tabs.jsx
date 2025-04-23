@@ -2,7 +2,7 @@ import React from 'react';
 
 const Tabs = ({ openTabs, activeTab, onTabClick, onCloseTab }) => {
   return (
-    <div className="flex bg-[#2d2d2d] border-b border-[#3c3c3c]">
+    <div className="flex bg-[#2d2d2d] border-b border-[#3c3c3c] border-l border-[#3c3c3c]">
       {openTabs.map((tab) => (
         <div
           key={tab.name}
