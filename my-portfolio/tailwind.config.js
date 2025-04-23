@@ -1,4 +1,5 @@
-export default {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -15,6 +16,9 @@ export default {
         primary: '#1A1A7A',
         accent: '#4B4BE1',
         hoverLight: '#EAE6FF',
+      },
+      boxShadow: {
+        neumorphism: '8px 8px 16px #1a1a1a, -8px -8px 16px #262626',
       },
     },
   },
